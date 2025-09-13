@@ -119,3 +119,4 @@ export const useProjects = () => {
   }, []);
 
   return { projects, loading, error, refetch: fetchProjects };
+}
