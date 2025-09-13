@@ -1,4 +1,4 @@
-import { getBlogs, getAchievements } from './firebaseService';
+import { getBlogs, getAchievements, getProjects } from './firebaseService';
 
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -91,6 +91,18 @@ export const generateSitemap = async (settings: any) => {
         }));
         urls = [...urls, ...achievementUrls];
       }
+    }
+
+    // Add projects
+    const projectsResult = await getProjects();
+    if (projectsResult.success) {
+      const projectUrls = projectsResult.data.map((project: any) => ({
+        url: `/projects/${project.slug || project.id}`,
+        priority: '0.8',
+        changefreq: 'monthly',
+        lastmod: project.updatedAt?.toDate()?.toISOString() || project.createdAt?.toDate()?.toISOString()
+      }));
+      urls = [...urls, ...projectUrls];
     }
 
     // Generate XML

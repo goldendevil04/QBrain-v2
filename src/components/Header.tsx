@@ -123,6 +123,7 @@ const Header = () => {
                 { name: 'Home', path: '/' },
                 { name: 'About', path: '/about' },
                 { name: 'Achievements', path: '/achievements' },
+                { name: 'Projects', path: '/projects' },
                 { name: 'Team', path: '/team' },
                 { name: 'Join', path: '/join' },
                 { name: 'Contact', path: '/contact' }

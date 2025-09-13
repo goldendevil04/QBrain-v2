@@ -68,11 +68,17 @@ const SitemapManager = () => {
         toast.success('Sitemap generated successfully!');
         setLastGenerated(new Date());
         
-        // Also update the static sitemap file
-        const response = await fetch('/api/sitemap');
-        if (response.ok) {
-          const sitemapContent = await response.text();
-          console.log('Dynamic sitemap generated:', sitemapContent);
+        // Trigger sitemap regeneration
+        try {
+          const response = await fetch('/api/sitemap', { 
+            method: 'GET',
+            cache: 'no-cache'
+          });
+          if (response.ok) {
+            console.log('Sitemap API triggered successfully');
+          }
+        } catch (error) {
+          console.log('Sitemap API trigger failed, but settings saved');
         }
       } else {
         toast.error('Failed to generate sitemap');

@@ -42,8 +42,11 @@ const BlogManager: React.FC<BlogManagerProps> = ({ onUpdate }) => {
       [{ 'align': [] }],
       ['link', 'image', 'video'],
       ['blockquote', 'code-block'],
+      ['formula'],
       [{ 'size': ['small', false, 'large', 'huge'] }],
       [{ 'font': [] }],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      ['direction'],
       ['clean']
     ]
   };
@@ -267,7 +270,7 @@ const BlogManager: React.FC<BlogManagerProps> = ({ onUpdate }) => {
                   value={formData.content}
                   onChange={(content) => setFormData({ ...formData, content })}
                   modules={quillModules}
-                  style={{ height: '300px', marginBottom: '50px' }}
+                  style={{ height: '400px', marginBottom: '50px' }}
                 />
               </div>
             </div>

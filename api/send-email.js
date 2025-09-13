@@ -200,7 +200,7 @@ export default async function handler(req, res) {
 
         // Send confirmation to applicant
         await sendEmail({
-          from: `"Team Qbrain" <${process.env.SMTP_USER}>`,
+          from: `"Team Qbrain" <no-reply@qbrain.in>`,
           to: data.personalInfo.email,
           subject: 'Application Received - Qbrain Team',
           html: `

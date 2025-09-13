@@ -7,6 +7,7 @@ import DynamicAchievements from '../components/DynamicAchievements';
 import DynamicTeamStructure from '../components/DynamicTeamStructure';
 import JoinTeam from '../components/JoinTeam';
 import BlogSection from '../components/BlogSection';
+import ProjectsSection from '../components/ProjectsSection';
 import TechFocus from '../components/TechFocus';
 import FAQ from '../components/FAQ';
 import Contact from '../components/Contact';
@@ -31,6 +32,7 @@ const HomePage = () => {
           <About />
           <DynamicAchievements />
           <DynamicTeamStructure />
+          <ProjectsSection />
           <BlogSection />
           <TechFocus />
           <FAQ />

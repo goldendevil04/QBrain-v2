@@ -32,8 +32,11 @@ import SEOManager from './components/SEOManager';
 import JoinTeamSettingsManager from './components/JoinTeamSettingsManager';
 import RecentActivity from './components/RecentActivity';
 import SitemapManager from './components/SitemapManager';
+import DonationManager from './components/DonationManager';
+import ProjectManager from './components/ProjectManager';
 import { Globe } from 'lucide-react';
-import { getApplications, getContactMessages, getTeamMembers, getHackathons, getBlogs } from '../services/firebaseService';
+import { Folder, Heart } from 'lucide-react';
+import { getApplications, getContactMessages, getTeamMembers, getHackathons, getBlogs, getProjects } from '../services/firebaseService';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -44,7 +47,8 @@ const AdminDashboard = () => {
     applications: 0,
     messages: 0,
     blogs: 0,
-    publishedBlogs: 0
+    publishedBlogs: 0,
+    projects: 0
   });
 
   useEffect(() => {
@@ -53,12 +57,13 @@ const AdminDashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const [membersResult, hackathonsResult, applicationsResult, messagesResult, blogsResult] = await Promise.all([
+      const [membersResult, hackathonsResult, applicationsResult, messagesResult, blogsResult, projectsResult] = await Promise.all([
         getTeamMembers(),
         getHackathons(),
         getApplications(),
         getContactMessages(),
-        getBlogs()
+        getBlogs(),
+        getProjects()
       ]);
 
       const blogs = blogsResult.success ? blogsResult.data : [];
@@ -70,7 +75,8 @@ const AdminDashboard = () => {
         applications: applicationsResult.success ? applicationsResult.data.length : 0,
         messages: messagesResult.success ? messagesResult.data.length : 0,
         blogs: blogs.length,
-        publishedBlogs: publishedBlogs.length
+        publishedBlogs: publishedBlogs.length,
+        projects: projectsResult.success ? projectsResult.data.length : 0
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -91,9 +97,11 @@ const AdminDashboard = () => {
     { id: 'team', label: 'Team Members', icon: Users },
     { id: 'hackathons', label: 'Hackathons', icon: Trophy },
     { id: 'achievements', label: 'Achievements', icon: Trophy },
+    { id: 'projects', label: 'Projects', icon: Folder },
     { id: 'blogs', label: 'Blogs', icon: MessageSquare },
     { id: 'applications', label: 'Applications', icon: UserPlus },
     { id: 'messages', label: 'Messages', icon: Mail },
+    { id: 'donations', label: 'Donations', icon: Heart },
     { id: 'jointeam', label: 'Join Team Settings', icon: Settings },
     { id: 'welcome', label: 'Welcome & Audio', icon: Volume2 },
     { id: 'seo', label: 'SEO & Analytics', icon: Search },
@@ -174,6 +182,16 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               </div>
+              
+              <div className="bg-slate-800/50 border border-orange-400/20 rounded-xl p-4 sm:p-6">
+                <div className="flex items-center space-x-3">
+                  <Folder className="h-6 w-6 sm:h-8 sm:w-8 text-orange-400" />
+                  <div>
+                    <div className="text-xl sm:text-2xl font-bold text-white">{stats.projects}</div>
+                    <div className="text-xs sm:text-sm text-gray-400">Projects</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Analytics Section */}
@@ -224,12 +242,16 @@ const AdminDashboard = () => {
         return <HackathonManager onUpdate={fetchStats} />;
       case 'achievements':
         return <AchievementManager onUpdate={fetchStats} />;
+      case 'projects':
+        return <ProjectManager onUpdate={fetchStats} />;
       case 'blogs':
         return <BlogManager onUpdate={fetchStats} />;
       case 'applications':
         return <ApplicationManager />;
       case 'messages':
         return <ContactManager />;
+      case 'donations':
+        return <DonationManager />;
       case 'jointeam':
         return <JoinTeamSettingsManager />;
       case 'welcome':

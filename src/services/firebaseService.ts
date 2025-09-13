@@ -664,6 +664,163 @@ export const getAchievementById = async (idOrSlug: string) => {
   }
 };
 
+// Donation Settings
+export const getDonationSettings = async () => {
+  try {
+    const docRef = doc(db, 'settings', 'donations');
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      return { success: true, data };
+    }
+    return { success: true, data: null };
+  } catch (error) {
+    console.error('Error fetching donation settings:', error);
+    return { success: false, error };
+  }
+};
+
+export const updateDonationSettings = async (settings: any) => {
+  try {
+    const docRef = doc(db, 'settings', 'donations');
+    await updateDoc(docRef, {
+      ...settings,
+      updatedAt: Timestamp.now()
+    });
+    return { success: true };
+  } catch (error) {
+    try {
+      const docRef = doc(db, 'settings', 'donations');
+      await updateDoc(docRef, {
+        ...settings,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now()
+      });
+      return { success: true };
+    } catch (createError) {
+      console.error('Error updating donation settings:', createError);
+      return { success: false, error: createError };
+    }
+  }
+};
+
+// Projects
+export const addProject = async (projectData: any, imageFiles?: File[]) => {
+  try {
+    // Generate slug if not provided
+    const slug = projectData.slug || createSlug(projectData.title);
+    
+    let images: string[] = [];
+    let featuredImage = '';
+    
+    if (imageFiles && imageFiles.length > 0) {
+      for (const file of imageFiles) {
+        const imageRef = ref(storage, `projects/${uuidv4()}-${file.name}`);
+        const snapshot = await uploadBytes(imageRef, file);
+        const imageUrl = await getDownloadURL(snapshot.ref);
+        images.push(imageUrl);
+      }
+      featuredImage = images[0];
+    }
+
+    const docRef = await addDoc(collection(db, 'projects'), {
+      ...projectData,
+      slug,
+      images,
+      featuredImage,
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now()
+    });
+    
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error('Error adding project:', error);
+    return { success: false, error };
+  }
+};
+
+export const getProjects = async () => {
+  try {
+    const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
+    const querySnapshot = await getDocs(q);
+    const projects = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    return { success: true, data: projects };
+  } catch (error) {
+    console.error('Error fetching projects:', error);
+    return { success: false, error };
+  }
+};
+
+export const getProjectBySlug = async (slug: string) => {
+  try {
+    const q = query(collection(db, 'projects'), where('slug', '==', slug));
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      return { success: false, error: 'Project not found' };
+    }
+    
+    const project = {
+      id: querySnapshot.docs[0].id,
+      ...querySnapshot.docs[0].data()
+    };
+    
+    return { success: true, data: project };
+  } catch (error) {
+    console.error('Error fetching project by slug:', error);
+    return { success: false, error };
+  }
+};
+
+export const updateProject = async (id: string, projectData: any, imageFiles?: File[]) => {
+  try {
+    let updateData = { ...projectData, updatedAt: Timestamp.now() };
+    
+    if (projectData.title && !projectData.slug) {
+      updateData.slug = createSlug(projectData.title);
+    }
+    
+    if (imageFiles && imageFiles.length > 0) {
+      let images: string[] = [];
+      for (const file of imageFiles) {
+        const imageRef = ref(storage, `projects/${uuidv4()}-${file.name}`);
+        const snapshot = await uploadBytes(imageRef, file);
+        const imageUrl = await getDownloadURL(snapshot.ref);
+        images.push(imageUrl);
+      }
+      updateData.images = images;
+      updateData.featuredImage = images[0];
+    }
+
+    await updateDoc(doc(db, 'projects', id), updateData);
+    return { success: true };
+  } catch (error) {
+    console.error('Error updating project:', error);
+    return { success: false, error };
+  }
+};
+
+export const deleteProject = async (id: string, images?: string[]) => {
+  try {
+    if (images && images.length > 0) {
+      for (const imageUrl of images) {
+        const imageRef = ref(storage, imageUrl);
+        await deleteObject(imageRef);
+      }
+    }
+    
+    await deleteDoc(doc(db, 'projects', id));
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    return { success: false, error };
+  }
+};
+
 // UI Settings
 export const getUISettings = async () => {
   try {

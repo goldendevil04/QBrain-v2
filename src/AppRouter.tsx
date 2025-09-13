@@ -12,6 +12,9 @@ import AchievementDetailPage from './pages/AchievementDetailPage';
 import TeamPage from './pages/TeamPage';
 import ContactPage from './pages/ContactPage';
 import JoinTeamPage from './pages/JoinTeamPage';
+import ProjectsPage from './pages/ProjectsPage';
+import ProjectDetailPage from './pages/ProjectDetailPage';
+import DonatePage from './pages/DonatePage';
 import ClickSoundProvider from './components/ClickSoundProvider';
 
 const AppRouter = () => {
@@ -26,9 +29,12 @@ const AppRouter = () => {
               <Route path="/about" element={<AboutPage />} />
               <Route path="/achievements" element={<AchievementsPage />} />
               <Route path="/achievements/:id" element={<AchievementDetailPage />} />
+              <Route path="/projects" element={<ProjectsPage />} />
+              <Route path="/projects/:slug" element={<ProjectDetailPage />} />
               <Route path="/team" element={<TeamPage />} />
               <Route path="/join" element={<JoinTeamPage />} />
               <Route path="/contact" element={<ContactPage />} />
+              <Route path="/donate" element={<DonatePage />} />
               <Route path="/Qadmin" element={<AdminPanel />} />
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/blog/:slug" element={<BlogPost />} />

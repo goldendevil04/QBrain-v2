@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getTeamMembers, getHackathons, getAchievements, getBlogs } from '../services/firebaseService';
+import { getTeamMembers, getHackathons, getAchievements, getBlogs, getProjects } from '../services/firebaseService';
 
 export const useTeamMembers = () => {
   const [members, setMembers] = useState([]);
@@ -96,3 +96,26 @@ export const useBlogs = () => {
 
   return { blogs, loading, error, refetch: fetchBlogs };
 };
+
+export const useProjects = () => {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchProjects = async () => {
+    setLoading(true);
+    const result = await getProjects();
+    if (result.success) {
+      setProjects(result.data);
+      setError(null);
+    } else {
+      setError(result.error);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  return { projects, loading, error, refetch: fetchProjects };

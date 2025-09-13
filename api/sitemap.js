@@ -1,4 +1,4 @@
-import { getBlogs, getAchievements } from '../src/services/firebaseService.js';
+import { getBlogs, getAchievements, getProjects } from '../src/services/firebaseService.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -14,9 +14,11 @@ export default async function handler(req, res) {
       { url: '/about', priority: '0.8', changefreq: 'weekly' },
       { url: '/team', priority: '0.8', changefreq: 'weekly' },
       { url: '/achievements', priority: '0.9', changefreq: 'weekly' },
+      { url: '/projects', priority: '0.9', changefreq: 'weekly' },
       { url: '/blog', priority: '0.9', changefreq: 'weekly' },
       { url: '/contact', priority: '0.7', changefreq: 'monthly' },
-      { url: '/join', priority: '0.8', changefreq: 'weekly' }
+      { url: '/join', priority: '0.8', changefreq: 'weekly' },
+      { url: '/donate', priority: '0.6', changefreq: 'monthly' }
     ];
 
     let urls = [...staticPages];
@@ -46,6 +48,18 @@ export default async function handler(req, res) {
           lastmod: achievement.updatedAt?.toDate()?.toISOString() || achievement.createdAt?.toDate()?.toISOString()
         }));
         urls = [...urls, ...achievementUrls];
+      }
+
+      // Add projects
+      const projectsResult = await getProjects();
+      if (projectsResult.success) {
+        const projectUrls = projectsResult.data.map((project) => ({
+          url: `/projects/${project.slug || project.id}`,
+          priority: '0.8',
+          changefreq: 'monthly',
+          lastmod: project.updatedAt?.toDate()?.toISOString() || project.createdAt?.toDate()?.toISOString()
+        }));
+        urls = [...urls, ...projectUrls];
       }
     } catch (error) {
       console.error('Error fetching dynamic content for sitemap:', error);
